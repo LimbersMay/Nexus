@@ -6,7 +6,7 @@ import re
 import shutil
 from typing import List, Optional
 
-from models.models import FolderSortingRule, OrderedFile, SortingRule
+from models.models import FolderSortingRule, OrderedFile, FileSortingRule
 from services.ordered_files_repository import OrderedFilesRepository
 from services.path_repository import PathRepository
 from services.settings_repository import SettingsRepository
@@ -36,7 +36,6 @@ class FileSorter:
 
         # Folder config
         self.__folder_rules = self.__settings_repository.get_folder_rules()
-        self.__default_folder_action = self.__settings_repository.get_default_folder_action()
 
         # Track list
         self.__newly_tracked_items: List[OrderedFile] = []
@@ -89,9 +88,9 @@ class FileSorter:
             return
 
         # 3. Find destination folder and rule
-        rule_object = self.__find_matching_file_rule(file_path.name)
+        item_rule = self.__find_matching_file_rule(file_path.name)
 
-        destination_folder_name = rule_object.folder_name if rule_object else self.__default_folder
+        destination_folder_name = item_rule.destination_folder if item_rule else self.__default_folder
 
         # 4. Create destination path and move file
         destination_folder_path = self.__destination_path / destination_folder_name
@@ -100,6 +99,13 @@ class FileSorter:
 
         try:
             shutil.move(str(file_path), str(final_file_path))
+
+            # 5. Track the moved file if lifecycle is enabled
+            has_active_lifecycle = item_rule and item_rule.lifecycle and item_rule.lifecycle.enabled
+
+            if not has_active_lifecycle:
+                self.__untracked_items_counter += 1
+                return
 
             items_to_track = OrderedFile(
                 name=file_path.name,
@@ -115,7 +121,7 @@ class FileSorter:
 
     def __process_folder(self, folder_path: pathlib.Path):
         rule = self.__find_matching_folder_rule(folder_path.name)
-        action = rule.action if rule else self.__default_folder_action
+        action = rule.action
 
         if action == 'ignore':
             return
@@ -123,10 +129,10 @@ class FileSorter:
         elif action == 'process_contents':
 
             # 1. Validate destination folder
-            if not rule or not rule.destinationFolder:
+            if not rule or not rule.destination_folder:
                 return
 
-            destination_folder_path = self.__destination_path / rule.destinationFolder
+            destination_folder_path = self.__destination_path / rule.destination_folder
             destination_folder_path.mkdir(parents=True, exist_ok=True)
 
             # 2. Process each file in the folder
@@ -142,7 +148,7 @@ class FileSorter:
                                 name=sub_item.name,
                                 ordered_date=datetime.datetime.now().date(),
                                 path=str(final_file_path),
-                                rule_name_applied=rule.ruleName,
+                                rule_name_applied=rule.rule_name,
                             )
 
                             self.__newly_tracked_items.append(items_to_track)
@@ -154,15 +160,15 @@ class FileSorter:
                         print(f"Error moving file {sub_item} to {final_file_path}: {e}")
 
             # 3. Delete the empty folder if specified
-            if rule and rule.deleteEmptyAfterProcessing:
+            if rule and rule.delete_empty_after_processing:
                 try:
-                    folder_path.rmdir()
-                except OSError:
-                    pass
+                    shutil.rmtree(folder_path)
+                except Exception as e:
+                    print(f"Error deleting non-empty folder {folder_path}: {e}")
 
         elif action == 'move':
             destination_base = self.__path_repository.get_destination_path()
-            destination_folder = rule.destinationFolder if rule.destinationFolder else 'Folders'
+            destination_folder = rule.destination_folder if rule.destination_folder else 'Folders'
 
             final_destination_path = destination_base / destination_folder / folder_path.name
 
@@ -187,7 +193,8 @@ class FileSorter:
             except Exception as e:
                 print(f"Error moving folder {folder_path} to {final_destination_path}: {e}")
 
-    def __find_matching_file_rule(self, file_name: str) -> Optional[SortingRule]:
+
+    def __find_matching_file_rule(self, file_name: str) -> Optional[FileSortingRule]:
         """
         Find the sorting rule that matches the given file name.
         """
@@ -206,10 +213,10 @@ class FileSorter:
     def __find_matching_folder_rule(self, folder_name: str) -> FolderSortingRule | None:
         for rule in self.__folder_rules:
             for pattern in rule.patterns:
-                if rule.matchBy == 'glob':
+                if rule.match_by == 'glob':
                     if fnmatch.fnmatch(folder_name, pattern):
                         return rule
-                elif rule.matchBy == 'regex':
+                elif rule.match_by == 'regex':
                     if re.match(pattern, folder_name):
                         return rule
         return None

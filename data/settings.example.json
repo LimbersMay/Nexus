@@ -1,20 +1,25 @@
 {
     "paths": {
-        "sourcePath": "C:\\Users\\LMayNasa\\Downloads",
-        "destinationPath": "C:\\Users\\LMayNasa\\Downloads\\Organized"
+        "sourcePath": "C:\\Users\\UserName\\Downloads",
+        "destinationPath": "C:\\Users\\UserName\\Downloads\\Organized"
     },
     "settings": {
         "maxSizeInMb": 5000
     },
-    "defaultLifecycle": {
-        "enabled": true,
-        "action": "trash",
-        "daysToKeep": 2
-    },
-    "sortingRules": [
+    "fileRules": [
         {
-            "folderName": "TV\\Series",
-            "matchBy": "regex",
+            "patterns": [
+                ".*Gemini.*"
+            ],
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Gemini",
+            "matchBy": "regex"
+        },
+        {
             "patterns": [
                 ".*S\\d{2}E\\d{2}.*"
             ],
@@ -22,11 +27,11 @@
                 "enabled": false,
                 "action": "delete",
                 "daysToKeep": 30
-            }
+            },
+            "destinationFolder": "TV\\Series",
+            "matchBy": "regex"
         },
         {
-            "folderName": "TV\\Movies",
-            "matchBy": "regex",
             "patterns": [
                 ".*(1080p|...).*\\d{4}.*",
                 ".*\\d{4}.*(1080p|...).*"
@@ -35,43 +40,55 @@
                 "enabled": false,
                 "action": "delete",
                 "daysToKeep": 30
-            }
+            },
+            "destinationFolder": "TV\\Movies",
+            "matchBy": "regex"
         },
         {
-            "folderName": "Word",
-            "matchBy": "extension",
             "patterns": [
                 ".doc",
                 ".docx",
                 ".dot"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Word",
+            "matchBy": "extension"
         },
         {
-            "folderName": "PowerPoint",
-            "matchBy": "extension",
             "patterns": [
                 ".ppt",
                 ".pptx",
                 ".pps",
                 ".pot"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "PowerPoint",
+            "matchBy": "extension"
         },
         {
-            "folderName": "Excel",
-            "matchBy": "extension",
             "patterns": [
                 ".xls",
                 ".xlsx",
                 ".xlsm",
                 ".xlt"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Excel",
+            "matchBy": "extension"
         },
         {
-            "folderName": "Video",
-            "matchBy": "extension",
             "patterns": [
                 ".avi",
                 ".divx",
@@ -82,11 +99,15 @@
                 ".wmv",
                 ".wpl"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Video",
+            "matchBy": "extension"
         },
         {
-            "folderName": "Image",
-            "matchBy": "extension",
             "patterns": [
                 ".JPEG",
                 ".JPG",
@@ -105,11 +126,15 @@
                 ".ai",
                 ".id"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Image",
+            "matchBy": "extension"
         },
         {
-            "folderName": "Audio",
-            "matchBy": "extension",
             "patterns": [
                 ".mp3",
                 ".mid",
@@ -122,11 +147,15 @@
                 ".flac",
                 ".aym"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Audio",
+            "matchBy": "extension"
         },
         {
-            "folderName": "Compressed",
-            "matchBy": "extension",
             "patterns": [
                 ".zip",
                 ".rar",
@@ -136,51 +165,109 @@
                 ".gz",
                 ".tar.bz2"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Compressed",
+            "matchBy": "extension"
         },
         {
-            "folderName": "PDF",
-            "matchBy": "extension",
             "patterns": [
                 ".pdf"
             ],
-            "lifecycle": null
+            "lifecycle": {
+                "enabled": true,
+                "action": "trash",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "PDF",
+            "matchBy": "extension"
         }
     ],
     "defaultFolder": "Other",
     "folderRules": [
         {
-            "ruleName": "MoveSeries",
+            "patterns": [
+                "^Organized$"
+            ],
+            "lifecycle": null,
+            "destinationFolder": null,
+            "ruleName": "Organized",
             "matchBy": "regex",
+            "action": "ignore",
+            "deleteEmptyAfterProcessing": false
+        },
+        {
+            "patterns": [
+                "^GeminiPrompts$"
+            ],
+            "lifecycle": {
+                "enabled": false,
+                "action": "delete",
+                "daysToKeep": 2
+            },
+            "destinationFolder": "Prompts\\Gemini",
+            "ruleName": "GeminiPrompts",
+            "matchBy": "regex",
+            "action": "process_contents",
+            "deleteEmptyAfterProcessing": false
+        },
+        {
+            "patterns": [
+                "^Ekasoft$"
+            ],
+            "lifecycle": null,
+            "destinationFolder": null,
+            "ruleName": "Ekasoft",
+            "matchBy": "regex",
+            "action": "ignore",
+            "deleteEmptyAfterProcessing": false
+        },
+        {
             "patterns": [
                 ".*S\\d{2}E\\d{2}.*"
             ],
-            "action": "process_contents",
-            "deleteEmptyAfterProcessing": true,
-            "destinationFolder": "TV\\Series",
             "lifecycle": {
                 "enabled": false,
                 "action": "trash",
                 "daysToKeep": 30
-            }
+            },
+            "destinationFolder": "TV\\Series",
+            "ruleName": "MoveSeries",
+            "matchBy": "regex",
+            "action": "process_contents",
+            "deleteEmptyAfterProcessing": true
         },
         {
-            "ruleName": "MoveMovies",
-            "matchBy": "regex",
             "patterns": [
                 ".*(1080p|...).*\\d{4}.*",
                 ".*\\d{4}.*(1080p|...).*"
             ],
-            "action": "process_contents",
-            "deleteEmptyAfterProcessing": true,
-            "destinationFolder": "TV\\Movies",
             "lifecycle": {
                 "enabled": false,
                 "action": "trash",
                 "daysToKeep": 30
-            }
+            },
+            "destinationFolder": "TV\\Movies",
+            "ruleName": "MoveMovies",
+            "matchBy": "regex",
+            "action": "process_contents",
+            "deleteEmptyAfterProcessing": true
+        },
+        {
+            "patterns": [
+                ".*"
+            ],
+            "lifecycle": null,
+            "destinationFolder": "Other",
+            "ruleName": "Default",
+            "matchBy": "regex",
+            "action": "process_contents",
+            "deleteEmptyAfterProcessing": true
         }
     ],
-    "defaultFolderAction": "ignore",
-    "orderedFiles": []
+    "orderedFiles": [
+    ]
 }

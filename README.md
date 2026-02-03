@@ -44,7 +44,7 @@ The global `daysToKeep` setting is gone. Now, you have fine-grained control over
 ### 🏗️ Pydantic Validation
 The entire `settings.json` file is now loaded and validated by Pydantic. This provides:
 * **Robust Error Handling:** The script will fail on launch with a clear error message if your `settings.json` is misconfigured.
-* **Automatic `camelCase`:** You can keep using `camelCase` (like `sourcePath`) in your JSON, and it will be automatically mapped to `snake_case` (like `source_path`) in Python.
+* **Automatic `camelCase`:** You can keep using `camelCase` in your JSON, and it will be automatically mapped to `snake_case` in Python.
 
 ## Technologies
 * Python 3.x
@@ -148,93 +148,74 @@ The settings are defined in `data/settings.example.json`. The structure has been
 ### Example `settings.example.json`
 ```json
 {
+  "paths": {
+    "sourcePath": "C:\\Users\\UserName\\Downloads",
+    "destinationPath": "C:\\Users\\UserName\\Downloads\\Organized"
+  },
   "settings": {
     "maxSizeInMb": 5000
   },
-  "defaultLifecycle": {
-    "enabled": true,
-    "action": "trash",
-    "daysToKeep": 7
-  },
-  "paths": {
-    "sourcePath": "C:\\Users\\YourUser\\Downloads",
-    "destinationPath": "C:\\Users\\YourUser\\Downloads\\Organized"
-  },
-  "sortingRules": [
+  "fileRules": [
     {
-      "folderName": "PDF",
+      "patterns": [".pdf"],
+      "destinationFolder": "PDF",
       "matchBy": "extension",
-      "patterns": [".pdf"]
+      "lifecycle": {
+        "enabled": true,
+        "action": "trash",
+        "daysToKeep": 2
+      }
     }
   ],
   "defaultFolder": "Other",
   "folderRules": [
     {
-      "ruleName": "Move Series (SxxExx)",
+      "ruleName": "Move Series",
       "matchBy": "regex",
       "patterns": [".*S\\d{2}E\\d{2}.*"],
-      "action": "move_folder",
-      "destinationFolder": "Videos/Series",
+      "action": "process_contents",
+      "destinationFolder": "TV/Series",
+      "deleteEmptyAfterProcessing": true,
       "lifecycle": {
         "enabled": false
       }
     },
     {
-      "ruleName": "Process Project Files",
-      "matchBy": "glob",
-      "patterns": ["Project_*"],
-      "action": "process_contents",
-      "destinationFolder": "School/Projects",
-      "deleteEmptyAfterProcessing": true,
-      "lifecycle": {
-        "enabled": true,
-        "action": "trash",
-        "daysToKeep": 30
-      }
-    },
-    {
-      "ruleName": "Ignore System Folders",
-      "matchBy": "glob",
-      "patterns": ["node_modules", ".git"],
+      "ruleName": "Organized",
+      "matchBy": "regex",
+      "patterns": ["^Organized$"],
       "action": "ignore"
     }
   ],
-  "defaultFolderAction": "ignore",
   "orderedFiles": []
 }
 ```
 
 ### Settings Explained
 
-* **`settings`**: Global script settings.
-    * `maxSizeInMb`: Files larger than this (in MB) will be ignored by the file sorter.
-* **`defaultLifecycle`**: The fallback policy for any file or folder that doesn't have a custom `lifecycle` block in its rule.
-    * `enabled`: `true` or `false`.
-    * `action`: `trash` (sends to system trash) or `delete` (permanent deletion).
-    * `daysToKeep`: Number of days to keep an item before the action is applied.
 * **`paths`**: Core directories.
     * `sourcePath`: The folder to scan (e.g., your Downloads folder).
     * `destinationPath`: The root folder where organized files/folders will be moved.
-* **`sortingRules` (For Files)**: A list of rules for individual files.
-    * `folderName`: The subfolder in `destinationPath` to move files to (e.g., "PDF").
-    * `matchBy`: `extension` or `regex`.
+* **`settings`**: Global script settings.
+    * `maxSizeInMb`: Files larger than this (in MB) will be ignored by the file sorter.
+* **`fileRules` (For Files)**: A list of rules for individual files.
     * `patterns`: A list of patterns to match (e.g., `[".pdf"]` or `[".*Gemini.*"]`).
-    * `lifecycle` (Optional): A policy block (see `defaultLifecycle`) to override the default for this rule.
-* **`defaultFolder`**: The folder name for files that don't match any `sortingRules`.
-* **`folderRules` (For Folders)**: A list of rules for folders found in `sourcePath`. Rules are processed in order.
-    * `ruleName`: A unique name for this rule (e.g., "Move Series"). This name is used for logging.
-    * `matchBy`: `glob` (for simple patterns like `Project_*`) or `regex` (for complex patterns).
+    * `destinationFolder`: The subfolder in `destinationPath` to move files to (e.g., "PDF").
+    * `matchBy`: `extension` or `regex`.
+    * `lifecycle` (Optional): A policy block to override the default for this rule.
+        * `enabled`: `true` or `false`.
+        * `action`: `trash` or `delete`.
+        * `daysToKeep`: Number of days before action is applied.
+* **`defaultFolder`**: The folder name for files that don't match any `fileRules`.
+* **`folderRules` (For Folders)**: A list of rules for folders found in `sourcePath`.
+    * `ruleName`: A unique name for this rule.
+    * `matchBy`: `glob` or `regex`.
     * `patterns`: A list of patterns to match.
-    * `action`:
-        * `move_folder`: Moves the entire folder to `destinationFolder`.
-        * `process_contents`: Moves the folder's *contents* to `destinationFolder`.
-        * `ignore`: Skips this folder.
-    * `destinationFolder` (Optional): The subfolder in `destinationPath` to use for `move_folder` or `process_contents`.
-    * `deleteEmptyAfterProcessing` (Optional): If `true`, deletes the original folder after `process_contents` is complete.
+    * `action`: `move_folder`, `process_contents`, or `ignore`.
+    * `destinationFolder` (Optional): The subfolder in `destinationPath`.
+    * `deleteEmptyAfterProcessing` (Optional): If `true`, deletes the original folder after `process_contents`.
     * `lifecycle` (Optional): A policy block to apply to the item.
-* **`defaultFolderAction`**: The action (`move_folder`, `process_contents`, `ignore`) to apply to any folder that doesn't match a rule in `folderRules`. `ignore` is recommended for safety.
-* **`orderedFiles`**: The audit log. This is managed by the script.
-    * `rule_name_applied`: The "tag" that links an item to its `lifecycle` policy.
+* **`orderedFiles`**: The audit log/registry of moved items.
 
 ## Future Features
 * Support for multiple source folders.

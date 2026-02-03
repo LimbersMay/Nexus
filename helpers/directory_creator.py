@@ -10,8 +10,8 @@ class DirectoryCreator:
         self.__settings_repository = settings_repository
 
     def execute(self) -> None:
-        destination_path = self.__path_repository.get_destination_path().name
+        destination_path = self.__path_repository.get_destination_path()
         sorting_rules = self.__settings_repository.get_sorting_rules()
 
         for rule in sorting_rules:
-            os.makedirs(os.path.join(destination_path, rule.folder_name), exist_ok=True)
+            os.makedirs(os.path.join(destination_path, rule.destination_folder), exist_ok=True)
