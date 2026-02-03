@@ -44,27 +44,23 @@ class PathConfig(CamelCaseModel):
             raise ValueError('Destination path cannot be empty')
         return v
 
-
-class SortingRule(CamelCaseModel):
-    folder_name: str
-    match_by: str
+class SortingRuleBase(CamelCaseModel):
     patterns: list[str]
-
     lifecycle: Optional[LifecyclePolicy] = None
+    destination_folder: Optional[str] = None
+
+class FileSortingRule(SortingRuleBase):
+    match_by: Literal['extension', 'regex']
 
 
-class FolderSortingRule(CamelCaseModel):
+
+class FolderSortingRule(SortingRuleBase):
     """Defines a folder sorting rule with associated folder name, matching criteria, and patterns."""
-    ruleName: str
-    matchBy: Literal['glob', 'regex']
-    patterns: list[str]
+    rule_name: str
+    match_by: Literal['glob', 'regex']
     action: Literal['process_contents', 'move', 'ignore']
 
     # for 'process_contents' action
-    deleteEmptyAfterProcessing: bool = False
+    delete_empty_after_processing: bool = False
 
-    # for 'move' action
-    destinationFolder: Optional[str] = None
-
-    lifecycle: Optional[LifecyclePolicy] = None
 

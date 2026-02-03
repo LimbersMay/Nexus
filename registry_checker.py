@@ -7,7 +7,7 @@ from typing import List
 
 from send2trash import send2trash
 
-from models.models import OrderedFile
+from models.models import OrderedFile, SortingRuleBase
 from services.ordered_files_repository import OrderedFilesRepository
 from services.path_repository import PathRepository
 from services.settings_repository import SettingsRepository
@@ -30,26 +30,17 @@ class Auditor:
 
     def __build_policy_map(self):
         """Create a mapping of rule names to their lifecycle policies."""
-        self.__policy_map = {}
+        self.__sorting_rules: List[SortingRuleBase] = []
 
         config = self.__settings_repository.get_app_config()
 
         # 1. Load policy rules of files
-        for rule in config.sorting_rules:
-            if rule.lifecycle:
-                self.__policy_map[rule.folder_name] = rule.lifecycle
+        for rule in config.file_rules:
+            self.__sorting_rules.append(rule)
 
         # 2. Load folder policy rules
         for rule in config.folder_rules:
-            if rule.lifecycle:
-                self.__policy_map[rule.ruleName] = rule.lifecycle
-
-        # 3. Load default policy
-        self.__default_policy = config.default_lifecycle
-
-        # 4. Policy for "Other"
-        self.__policy_map[config.default_folder] = self.__default_policy
-
+            self.__sorting_rules.append(rule)
 
     def check_files(self):
         """"
@@ -63,7 +54,7 @@ class Auditor:
         destination_path = self.__path_repository.get_destination_path()
 
         items_deleted_count = 0
-        items_to_remote_from_registry = []
+        items_to_remote_from_registry: List[OrderedFile] = []
         all_registered_items = self.__ordered_files_repository.get_ordered_files()
 
         # Create a map of registered paths for quick lookup
@@ -79,7 +70,8 @@ class Auditor:
                 continue
 
             # 1.2 Check lifecycle policy
-            policy = self.__policy_map.get(item.rule_name_applied, self.__default_policy)
+            policy = next((rule.lifecycle for rule in self.__sorting_rules
+                           if rule.destination_folder == item.rule_name_applied))
 
             if policy and policy.enabled:
                 days_expired = (datetime.now().date() - item.ordered_date).days
@@ -99,14 +91,41 @@ class Auditor:
 
         # 2. Process unregistered items
         not_registered_items = []
+        full_sorting_rules_paths = [self.__path_repository.get_destination_path() / rule.destination_folder
+                                    for rule in self.__sorting_rules if rule.destination_folder]
 
         for physical_item_path in destination_path.rglob('*'):
+
+            item_has_sub_folders = (
+                    physical_item_path.is_dir() and
+                    any(child.is_dir() for child in physical_item_path.iterdir())
+            )
+            if item_has_sub_folders:
+                continue
+
+            # determine if the item is already registered in a policy destination folder
+            exist_item_in_sorting_rule = physical_item_path in full_sorting_rules_paths
+            if exist_item_in_sorting_rule:
+                continue
+
+
             if str(physical_item_path) not in registered_paths_map:
                 # 2.1 Determine rule name applied
                 try:
-                    rule_name = physical_item_path.relative_to(destination_path).parts[0]
+                    # Get the relative parent folder to destination path
+                    relative_parent = physical_item_path.parent.relative_to(destination_path)
+
+                    # If the relative parent is empty, use default folder name
+                    rule_name = str(relative_parent) if str(relative_parent) != "." else self.__default_folder_name
                 except IndexError:
                     rule_name = self.__default_folder_name
+
+                # 2.2 find the rule applied
+                matching_rule = next((rule for rule in self.__sorting_rules
+                                      if rule.destination_folder == rule_name), None)
+
+                if matching_rule is None or matching_rule.lifecycle is None or not matching_rule.lifecycle.enabled:
+                    continue
 
                 new_item = OrderedFile(
                     name=physical_item_path.name,
@@ -124,7 +143,7 @@ class Auditor:
         # 3.1 Remove deleted items from registry
         if items_to_remote_from_registry:
             for item in items_to_remote_from_registry:
-                self.__ordered_files_repository.delete(item)
+                self.__ordered_files_repository.delete(item.name)
 
         # 4. Send notification
         if items_deleted_count > 0:
