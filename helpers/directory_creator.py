@@ -14,4 +14,5 @@ class DirectoryCreator:
         sorting_rules = self.__settings_repository.get_sorting_rules()
 
         for rule in sorting_rules:
-            os.makedirs(os.path.join(destination_path, rule.destination_folder), exist_ok=True)
+            if rule.destination_folder:
+                os.makedirs(os.path.join(destination_path, rule.destination_folder), exist_ok=True)

@@ -1,273 +1,314 @@
 {
-    "paths": {
-        "sourcePath": "C:\\Users\\UserName\\Downloads",
-        "destinationPath": "C:\\Users\\UserName\\Downloads\\Organized"
-    },
-    "settings": {
+  "version": "4.0.0",
+  "zones": [
+    {
+      "zoneName": "Screenshots",
+      "paths": {
+        "sourcePath": "C:\\Users\\UserName\\Pictures\\Screenshots",
+        "destinationPath": "C:\\Users\\UserName\\Downloads\\Organized\\Screenshots"
+      },
+      "settings": {
         "maxSizeInMb": 5000
+      },
+      "rules": [
+        {
+          "ruleName": "Default",
+          "patterns": [
+            ".*"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 7
+          },
+          "destinationFolder": "Archive",
+          "matchBy": "regex",
+          "handlingStrategy": "move"
+        }
+      ],
+      "orderedFiles": []
     },
-    "fileRules": [
+    {
+      "zoneName": "ClipboardInbox",
+      "paths": {
+        "sourcePath": "C:\\Users\\UserName\\Documents\\PersonalProjects\\ClipboardImageAutomaticSaver\\Clipboard_Inbox",
+        "destinationPath": "C:\\Users\\UserName\\Downloads\\Organized\\ClipboardInbox"
+      },
+      "settings": {
+        "maxSizeInMb": 5000
+      },
+      "rules": [
         {
-            "patterns": [
-                ".*Gemini.*"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Gemini",
-            "matchBy": "regex"
+          "ruleName": "SocialMedia",
+          "patterns": [
+            "(?i).*\\[.*Facebook.*\\].*",
+            "(?i).*\\[.*Twitter.*\\].*",
+            "(?i).*\\[.*Reddit.*\\].*"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 7
+          },
+          "destinationFolder": "SocialMedia",
+          "matchBy": "regex",
+          "handlingStrategy": "move"
         },
         {
-            "patterns": [
-                ".*S\\d{2}E\\d{2}.*"
-            ],
-            "lifecycle": {
-                "enabled": false,
-                "action": "delete",
-                "daysToKeep": 30
-            },
-            "destinationFolder": "TV\\Series",
-            "matchBy": "regex"
-        },
-        {
-            "patterns": [
-                ".*(1080p|...).*\\d{4}.*",
-                ".*\\d{4}.*(1080p|...).*"
-            ],
-            "lifecycle": {
-                "enabled": false,
-                "action": "delete",
-                "daysToKeep": 30
-            },
-            "destinationFolder": "TV\\Movies",
-            "matchBy": "regex"
-        },
-        {
-            "patterns": [
-                ".doc",
-                ".docx",
-                ".dot"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Word",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".ppt",
-                ".pptx",
-                ".pps",
-                ".pot"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "PowerPoint",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".xls",
-                ".xlsx",
-                ".xlsm",
-                ".xlt"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Excel",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".avi",
-                ".divx",
-                ".mov",
-                ".mp4",
-                ".mpg",
-                ".mkv",
-                ".wmv",
-                ".wpl"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Video",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".JPEG",
-                ".JPG",
-                ".jpg",
-                ".jpeg",
-                ".png",
-                ".bmp",
-                ".ico",
-                ".svg",
-                ".webp",
-                ".gif",
-                ".psd",
-                ".heic",
-                ".nef",
-                ".crw",
-                ".ai",
-                ".id"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Image",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".mp3",
-                ".mid",
-                ".wav",
-                ".wma",
-                ".cda",
-                ".ogm",
-                ".acc",
-                ".ac3",
-                ".flac",
-                ".aym"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Audio",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".zip",
-                ".rar",
-                ".rar5",
-                ".7z",
-                ".ace",
-                ".gz",
-                ".tar.bz2"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Compressed",
-            "matchBy": "extension"
-        },
-        {
-            "patterns": [
-                ".pdf"
-            ],
-            "lifecycle": {
-                "enabled": true,
-                "action": "trash",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "PDF",
-            "matchBy": "extension"
+          "ruleName": "Default",
+          "patterns": [
+            ".*"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 7
+          },
+          "destinationFolder": "Other",
+          "matchBy": "regex",
+          "handlingStrategy": "move"
         }
-    ],
-    "defaultFolder": "Other",
-    "folderRules": [
+      ],
+      "orderedFiles": []
+    },
+    {
+      "zoneName": "Downloads",
+      "paths": {
+        "sourcePath": "C:\\Users\\UserName\\Downloads",
+        "destinationPath": "C:\\Users\\UserName\\Downloads\\Organized\\Downloads"
+      },
+      "settings": {
+        "maxSizeInMb": 10000
+      },
+      "rules": [
         {
-            "patterns": [
-                "^Organized$"
-            ],
-            "lifecycle": null,
-            "destinationFolder": null,
-            "ruleName": "Organized",
-            "matchBy": "regex",
-            "action": "ignore",
-            "deleteEmptyAfterProcessing": false
+          "ruleName": "IgnoreTemporal",
+          "patterns": [
+            "^Temporal$"
+          ],
+          "lifecycle": null,
+          "destinationFolder": null,
+          "matchBy": "regex",
+          "handlingStrategy": "ignore"
         },
         {
-            "patterns": [
-                "^GeminiPrompts$"
-            ],
-            "lifecycle": {
-                "enabled": false,
-                "action": "delete",
-                "daysToKeep": 2
-            },
-            "destinationFolder": "Prompts\\Gemini",
-            "ruleName": "GeminiPrompts",
-            "matchBy": "regex",
-            "action": "process_contents",
-            "deleteEmptyAfterProcessing": false
+          "ruleName": "GeminiFiles",
+          "patterns": [
+            ".*Gemini.*"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 1
+          },
+          "destinationFolder": "Gemini",
+          "matchBy": "regex",
+          "handlingStrategy": "move"
         },
         {
-            "patterns": [
-                "^Ekasoft$"
-            ],
-            "lifecycle": null,
-            "destinationFolder": null,
-            "ruleName": "Ekasoft",
-            "matchBy": "regex",
-            "action": "ignore",
-            "deleteEmptyAfterProcessing": false
+          "ruleName": "TvSeries",
+          "patterns": [
+            ".*S\\d{2}E\\d{2}.*"
+          ],
+          "lifecycle": {
+            "enabled": false,
+            "action": "delete",
+            "daysToKeep": 30
+          },
+          "destinationFolder": "TV\\Series",
+          "matchBy": "regex",
+          "handlingStrategy": "process_contents",
+          "deleteEmptyAfterProcessing": true
         },
         {
-            "patterns": [
-                ".*S\\d{2}E\\d{2}.*"
-            ],
-            "lifecycle": {
-                "enabled": false,
-                "action": "trash",
-                "daysToKeep": 30
-            },
-            "destinationFolder": "TV\\Series",
-            "ruleName": "MoveSeries",
-            "matchBy": "regex",
-            "action": "process_contents",
-            "deleteEmptyAfterProcessing": true
+          "ruleName": "TvMovies",
+          "patterns": [
+            "(?i).*[\\. _\\-\\(\\[](19|20)\\d{2}[\\. _\\-\\)\\]].*(1080p|720p|2160p|4k|HDR|DvDrip).*"
+          ],
+          "lifecycle": {
+            "enabled": false,
+            "action": "delete",
+            "daysToKeep": 30
+          },
+          "destinationFolder": "TV\\Movies",
+          "matchBy": "regex",
+          "handlingStrategy": "process_contents",
+          "deleteEmptyAfterProcessing": true
         },
         {
-            "patterns": [
-                ".*(1080p|...).*\\d{4}.*",
-                ".*\\d{4}.*(1080p|...).*"
-            ],
-            "lifecycle": {
-                "enabled": false,
-                "action": "trash",
-                "daysToKeep": 30
-            },
-            "destinationFolder": "TV\\Movies",
-            "ruleName": "MoveMovies",
-            "matchBy": "regex",
-            "action": "process_contents",
-            "deleteEmptyAfterProcessing": true
+          "ruleName": "WordDocs",
+          "patterns": [
+            ".doc",
+            ".docx",
+            ".dot"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Word",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
         },
         {
-            "patterns": [
-                ".*"
-            ],
-            "lifecycle": null,
-            "destinationFolder": "Other",
-            "ruleName": "Default",
-            "matchBy": "regex",
-            "action": "process_contents",
-            "deleteEmptyAfterProcessing": true
+          "ruleName": "PowerPoint",
+          "patterns": [
+            ".ppt",
+            ".pptx",
+            ".pps",
+            ".pot"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "PowerPoint",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "Excel",
+          "patterns": [
+            ".xls",
+            ".xlsx",
+            ".xlsm",
+            ".xlt"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Excel",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "VideoFiles",
+          "patterns": [
+            ".avi",
+            ".divx",
+            ".mov",
+            ".mp4",
+            ".mpg",
+            ".mkv",
+            ".wmv",
+            ".wpl"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Video",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "Images",
+          "patterns": [
+            ".JPEG",
+            ".JPG",
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".bmp",
+            ".ico",
+            ".svg",
+            ".webp",
+            ".gif",
+            ".psd",
+            ".heic",
+            ".nef",
+            ".crw",
+            ".ai",
+            ".id"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Image",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "Audio",
+          "patterns": [
+            ".mp3",
+            ".mid",
+            ".wav",
+            ".wma",
+            ".cda",
+            ".ogm",
+            ".acc",
+            ".ac3",
+            ".flac",
+            ".aym"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Audio",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "Compressed",
+          "patterns": [
+            ".zip",
+            ".rar",
+            ".rar5",
+            ".7z",
+            ".ace",
+            ".gz",
+            ".tar.bz2"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Compressed",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "PDF",
+          "patterns": [
+            ".pdf"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "PDF",
+          "matchBy": "extension",
+          "handlingStrategy": "move"
+        },
+        {
+          "ruleName": "Default",
+          "patterns": [
+            ".*"
+          ],
+          "lifecycle": {
+            "enabled": true,
+            "action": "trash",
+            "daysToKeep": 2
+          },
+          "destinationFolder": "Other",
+          "matchBy": "regex",
+          "handlingStrategy": "process_contents",
+          "deleteEmptyAfterProcessing": true
         }
-    ],
-    "orderedFiles": [
-    ]
+      ],
+      "orderedFiles": []
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 venv
 *.pyc
 .idea
-data/settings.json
+data/settings_backup.json
+data/settingsdev.json
 *.exe
