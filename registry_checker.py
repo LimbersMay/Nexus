@@ -7,7 +7,7 @@ from typing import List
 
 from send2trash import send2trash
 
-from models.models import OrderedFile, SortingRuleBase
+from models.models import OrderedFile, SortingRule
 from services.ordered_files_repository import OrderedFilesRepository
 from services.path_repository import PathRepository
 from services.settings_repository import SettingsRepository
@@ -24,22 +24,16 @@ class Auditor:
         self.__settings_repository = settings_repository
         self.__notification_service = notificator_service
 
-        self.__default_folder_name = self.__settings_repository.get_default_folder()
-
         self.__build_policy_map()
 
     def __build_policy_map(self):
         """Create a mapping of rule names to their lifecycle policies."""
-        self.__sorting_rules: List[SortingRuleBase] = []
+        self.__sorting_rules: List[SortingRule] = []
 
         config = self.__settings_repository.get_app_config()
 
         # 1. Load policy rules of files
-        for rule in config.file_rules:
-            self.__sorting_rules.append(rule)
-
-        # 2. Load folder policy rules
-        for rule in config.folder_rules:
+        for rule in config.rules:
             self.__sorting_rules.append(rule)
 
     def check_files(self):
@@ -71,7 +65,7 @@ class Auditor:
 
             # 1.2 Check lifecycle policy
             policy = next((rule.lifecycle for rule in self.__sorting_rules
-                           if rule.destination_folder == item.rule_name_applied))
+                           if rule.rule_name == item.rule_name_applied))
 
             if policy and policy.enabled:
                 days_expired = (datetime.now().date() - item.ordered_date).days
@@ -110,15 +104,10 @@ class Auditor:
 
 
             if str(physical_item_path) not in registered_paths_map:
-                # 2.1 Determine rule name applied
-                try:
-                    # Get the relative parent folder to destination path
-                    relative_parent = physical_item_path.parent.relative_to(destination_path)
+                # 2.1 Determine rule name applied and  Get the relative parent folder to destination path
+                relative_parent = physical_item_path.parent.relative_to(destination_path)
 
-                    # If the relative parent is empty, use default folder name
-                    rule_name = str(relative_parent) if str(relative_parent) != "." else self.__default_folder_name
-                except IndexError:
-                    rule_name = self.__default_folder_name
+                rule_name = str(relative_parent)
 
                 # 2.2 find the rule applied
                 matching_rule = next((rule for rule in self.__sorting_rules
