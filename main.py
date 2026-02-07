@@ -1,4 +1,4 @@
-from models.app_config import AppConfig
+from models.app_config import ZoneConfig, RootConfig
 from file_sorter import FileSorter
 from helpers.config_loader import load_config
 from helpers.directory_creator import DirectoryCreator
@@ -14,29 +14,31 @@ def main():
     json_path = "data/settings.json"
 
     try:
-        config: AppConfig = load_config(json_path)
+        root_config: RootConfig = load_config(json_path)
     except Exception as e:
         print(f"Error loading configuration: {e}")
         return
 
-    json_persister = JsonConfigPersister(json_path)
-
-    path_repository = ConfigPathRepository(config.paths)
-    settings_repository = ConfigSettingsRepository(config)
-    ordered_files_repository = ConfigOrderedFilesRepository(config, json_persister)
+    global_persister = JsonConfigPersister(json_path, root_config)
     notification_service = PlyerNotificationService()
 
-    # 1. Create the directories if they do not exist
-    directory_creator = DirectoryCreator(path_repository, settings_repository)
-    directory_creator.execute()
+    for zone_config in root_config.zones:
+        path_repository = ConfigPathRepository(zone_config.paths)
+        settings_repository = ConfigSettingsRepository(zone_config)
+        ordered_files_repository = ConfigOrderedFilesRepository(zone_config, global_persister)
 
-    # 2. Check the files
-    auditor = Auditor(path_repository, ordered_files_repository, settings_repository, notification_service)
-    auditor.check_files()
+        # 1. Create the directories if they do not exist
+        directory_creator = DirectoryCreator(path_repository, settings_repository)
+        directory_creator.execute()
 
-    # 3. Sort the files
-    file_organizer = FileSorter(path_repository, settings_repository, ordered_files_repository, notification_service)
-    file_organizer.sort()
+        # 2. Check the files
+        auditor = Auditor(path_repository, ordered_files_repository, settings_repository, notification_service)
+        auditor.check_files()
+
+        # 3. Sort the files
+        file_organizer = FileSorter(path_repository, settings_repository, ordered_files_repository,
+                                    notification_service)
+        file_organizer.sort()
 
 
 if __name__ == "__main__":
