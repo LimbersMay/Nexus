@@ -328,9 +328,9 @@ Result:  Downloads/Organized/PDF/report.pdf
 
 ### `process_contents`
 
-Designed for folders. Recursively extracts all files from the matched folder, processes each one individually through the rule engine, and optionally deletes the now-empty source folder.
+Designed for folders. Recursively extracts all files from the matched folder, processes each one individually through the rule engine, and optionally deletes the now-empty source folder. Each file is matched independently: items that do not satisfy the folder rule fall through to the rest of your rules (typically a catch-all like `Other`).
 
-This is ideal for downloaded archives that extract into named folders (e.g., TV series or movie torrents):
+This is ideal for downloaded archives that extract into named folders (e.g., TV series or movie torrents). Example with a folder that mixes media and subtitles:
 
 ```
 Source:  Downloads/Breaking.Bad.S01E01.720p/
@@ -338,7 +338,7 @@ Source:  Downloads/Breaking.Bad.S01E01.720p/
            └─ subtitles.srt
 Rule:    destinationFolder = "TV/Series", handlingStrategy = "process_contents",
          deleteEmptyAfterProcessing = true
-Result:  Downloads/Organized/TV/Series/episode.mkv
+Result:  Downloads/Organized/TV/Series/Breaking.Bad.S01E01.720p.mkv
          Downloads/Organized/Other/subtitles.srt
          (source folder is sent to trash)
 ```
